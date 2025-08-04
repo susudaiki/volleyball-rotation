@@ -115,19 +115,41 @@
   }
 
   function makeDraggable(el) {
-    let offsetX, offsetY;
-    el.onmousedown = (e) => {
-      offsetX = e.offsetX;
-      offsetY = e.offsetY;
-      document.onmousemove = (e) => {
-        el.style.left = (e.pageX - court.offsetLeft - offsetX) + 'px';
-        el.style.top = (e.pageY - court.offsetTop - offsetY) + 'px';
-      };
-      document.onmouseup = () => {
-        document.onmousemove = null;
-      };
+  let offsetX, offsetY;
+
+  // PC用
+  el.onmousedown = (e) => {
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+    document.onmousemove = (e) => {
+      el.style.left = (e.pageX - court.offsetLeft - offsetX) + 'px';
+      el.style.top = (e.pageY - court.offsetTop - offsetY) + 'px';
     };
-  }
+    document.onmouseup = () => {
+      document.onmousemove = null;
+    };
+  };
+
+  // スマホ用
+  el.ontouchstart = (e) => {
+    const touch = e.touches[0];
+    const rect = el.getBoundingClientRect();
+    offsetX = touch.clientX - rect.left;
+    offsetY = touch.clientY - rect.top;
+
+    document.ontouchmove = (e) => {
+      const moveTouch = e.touches[0];
+      const x = moveTouch.clientX - court.offsetLeft - offsetX;
+      const y = moveTouch.clientY - court.offsetTop - offsetY;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+    };
+
+    document.ontouchend = () => {
+      document.ontouchmove = null;
+    };
+  };
+}
 
   drawPlayers();
   drawInputs();
