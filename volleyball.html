@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>バレーボールローテーション</title>
+  <style>
+    #court {
+      width: 600px;
+      height: 300px;
+      background-color: #ccffcc;
+      position: relative;
+      border: 2px solid #333;
+      margin: 20px auto;
+    }
+    .player {
+      width: 60px;
+      height: 60px;
+      background-color: #66aaff;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 60px;
+      color: white;
+      font-weight: bold;
+      position: absolute;
+      cursor: grab;
+      user-select: none;
+    }
+    #nameInputs {
+      width: 600px;
+      margin: 10px auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .name-input {
+      width: 90px;
+      margin: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .name-input input {
+      width: 80px;
+      padding: 4px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<h2 style="text-align:center;">バレーボール ローテーション（日比野中学校）</h2>
+
+<div id="court"></div>
+
+<div id="nameInputs"></div>
+
+<div style="text-align:center;">
+  <button onclick="rotate()">ローテーション</button>
+</div>
+
+<script>
+  const positions = [
+    {x: 100, y: 50},   // 1番: バックレフト
+    {x: 250, y: 50},   // 2番: バックセンター
+    {x: 400, y: 50},   // 3番: バックライト
+    {x: 400, y: 200},  // 4番: フロントライト
+    {x: 250, y: 200},  // 5番: フロントセンター
+    {x: 100, y: 200},  // 6番: フロントレフト
+  ];
+
+  let players = ['4(S)', '3(MB)', '2(WS)', '1(S)', '6(MB)', '5(WS)'];
+
+  const court = document.getElementById('court');
+  const nameInputs = document.getElementById('nameInputs');
+
+  function drawPlayers() {
+    court.innerHTML = '';
+    players.forEach((name, i) => {
+      const div = document.createElement('div');
+      div.className = 'player';
+      div.textContent = name;
+      div.style.left = positions[i].x + 'px';
+      div.style.top = positions[i].y + 'px';
+      makeDraggable(div);
+      court.appendChild(div);
+    });
+  }
+
+  function drawInputs() {
+    nameInputs.innerHTML = '';
+    players.forEach((name, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'name-input';
+
+      const label = document.createElement('label');
+      label.textContent = `選手${i + 1}`;
+
+      const input = document.createElement('input');
+      input.value = name;
+      input.oninput = () => {
+        players[i] = input.value;
+        drawPlayers();
+      };
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(input);
+      nameInputs.appendChild(wrapper);
+    });
+  }
+
+  function rotate() {
+    players.unshift(players.pop()); // ← 時計回り！
+    drawPlayers();
+    drawInputs();
+  }
+
+  function makeDraggable(el) {
+    let offsetX, offsetY;
+    el.onmousedown = (e) => {
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+      document.onmousemove = (e) => {
+        el.style.left = (e.pageX - court.offsetLeft - offsetX) + 'px';
+        el.style.top = (e.pageY - court.offsetTop - offsetY) + 'px';
+      };
+      document.onmouseup = () => {
+        document.onmousemove = null;
+      };
+    };
+  }
+
+  drawPlayers();
+  drawInputs();
+</script>
+
+</body>
+</html>
