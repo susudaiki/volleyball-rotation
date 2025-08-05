@@ -82,6 +82,8 @@
 
 <div style="text-align:center;">
   <button onclick="rotate()">ローテーション</button>
+   <button onclick="saveState()">保存する</button>
+  <button onclick="loadState()">読み込む</button>
 </div>
 
 <script>
@@ -176,6 +178,36 @@
     };
   };
 }
+ function saveState() {
+    const playerStates = [];
+    document.querySelectorAll('.player').forEach((el, i) => {
+      playerStates.push({
+        name: players[i],
+        left: el.style.left,
+        top: el.style.top
+      });
+    });
+    localStorage.setItem('volleyballPlayers', JSON.stringify(playerStates));
+    alert('保存しました！');
+  }
+
+  function loadState() {
+    const saved = localStorage.getItem('volleyballPlayers');
+    if (saved) {
+      const playerStates = JSON.parse(saved);
+      players = playerStates.map(p => p.name);
+      drawPlayers();
+      drawInputs();
+      const playerDivs = document.querySelectorAll('.player');
+      playerStates.forEach((p, i) => {
+        playerDivs[i].style.left = p.left;
+        playerDivs[i].style.top = p.top;
+      });
+    }
+  }
+   window.onload = () => {
+    loadState();
+  };
 
   drawPlayers();
   drawInputs();
