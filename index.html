@@ -112,7 +112,16 @@
       makeDraggable(div);
       court.appendChild(div);
     });
+    const liberoDiv = document.createElement('div');
+    liberoDiv.className = 'player';
+    liberoDiv.textContent = libero;
+    liberoDiv.style.left = liberoPosition.x + 'px';
+    liberoDiv.style.top = liberoPosition.y + 'px';
+    liberoDiv.style.backgroundColor = '#ff6666';
+    makeDraggable(liberoDiv);
+    court.appendChild(liberoDiv);
   }
+  
 
   function drawInputs() {
     nameInputs.innerHTML = '';
@@ -129,11 +138,26 @@
         players[i] = input.value;
         drawPlayers();
       };
-
       wrapper.appendChild(label);
       wrapper.appendChild(input);
       nameInputs.appendChild(wrapper);
     });
+     const liberoWrapper = document.createElement('div');
+    liberoWrapper.className = 'name-input';
+    const liberoLabel = document.createElement('label');
+    liberoLabel.textContent = 'リベロ';
+
+    const liberoInput = document.createElement('input');
+    liberoInput.value = libero;
+    liberoInput.oninput = () => {
+      libero = liberoInput.value;
+      drawPlayers();
+    };
+
+    liberoWrapper.appendChild(liberoLabel);
+    liberoWrapper.appendChild(liberoInput);
+    nameInputs.appendChild(liberoWrapper);
+    
   }
 
   function rotate() {
@@ -196,6 +220,13 @@
     if (saved) {
       const playerStates = JSON.parse(saved);
       players = playerStates.map(p => p.name);
+       if (playerStates[6]) {
+        libero = playerStates[6].name;
+        liberoPosition = {
+          x: parseInt(playerStates[6].left),
+          y: parseInt(playerStates[6].top)
+        };
+      }
       drawPlayers();
       drawInputs();
       const playerDivs = document.querySelectorAll('.player');
